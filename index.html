@@ -69,67 +69,68 @@
   </div>
 
   <script>
+    // URL brute du fichier de données généré par l'Action
     const jsonUrl = "https://raw.githubusercontent.com/FEPPN/daily-gas-spot-price/main/data.json";
 
-    // Fonction pour extraire proprement les valeurs des clés (gère la casse)
-    const pick = (o, ks) => {
-      for (const k of ks) {
-        if (o?.[k] !== undefined && o[k] !== null && o[k] !== "") return o[k];
-      }
-      return null;
-    };
-
-    // Convertit une chaîne "JJ/MM/AAAA" en un vrai objet Date JavaScript
+    // Convertit "JJ/MM/AAAA" en objet Date valide
     const parseFrenchDate = (str) => {
       if (!str) return null;
       const parts = str.split('/');
       if (parts.length === 3) {
         return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
       }
-      const parsed = new Date(str);
-      return isNaN(parsed.getTime()) ? null : parsed;
+      return null;
     };
 
     fetch(jsonUrl, { cache: "no-store" })
       .then(r => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!r.ok) throw new Error("Impossible de charger le fichier data.json (Erreur HTTP " + r.status + ")");
         return r.json();
       })
       .then(rows => {
         let dataPoints = [];
 
-        rows.forEach(r => {
-          const rawDate = pick(r, ["date", "Date", "dateISO"]);
-          const rawVal = pick(r, ["price", "Price", "withoutARENH", "without_arenh"]);
+        if (!rows || rows.length === 0) {
+          throw new Error("Le fichier data.json existe mais il est vide.");
+        }
+
+        rows.forEach((r, index) => {
+          // Extraction directe basée strictement sur vos colonnes en minuscules
+          const rawDate = r['date'] || r['Date'];
+          const rawVal = r['price'] || r['Price'];
           
-          // Nettoyage de la valeur numérique (remplace la virgule européenne par un point si nécessaire)
+          if (!rawDate || !rawVal) return;
+
+          // Nettoyage et conversion
           let cleanVal = String(rawVal).replace(',', '.').replace(/[^\d.-]/g, '');
           const val = parseFloat(cleanVal);
-          const dateObj = parseFrenchDate(rawDate);
+          const dateObj = parseFrenchDate(String(rawDate).strip ? String(rawDate).strip() : String(rawDate));
 
           if (dateObj && !isNaN(val)) {
             dataPoints.push({ date: dateObj, val: val, labelStr: rawDate });
           }
         });
 
-        // Tri par ordre chronologique strict
+        // Tri par ordre chronologique
         dataPoints.sort((a, b) => a.date - b.date);
 
         if (dataPoints.length === 0) {
-          throw new Error("Aucune donnée valide trouvée.");
+          throw new Error("Données illisibles. Vérifiez que la colonne A contient des dates (JJ/MM/AAAA) et la colonne B des chiffres.");
         }
 
         const labels = dataPoints.map(p => p.labelStr);
         const values = dataPoints.map(p => p.val);
 
-        // Calcul dynamique des limites de l'axe Y pour zoomer sur la courbe
+        // Calcul dynamique des axes pour zoomer
         const yMin = Math.min(...values);
         const yMax = Math.max(...values);
-        const pad = (yMax - yMin) * 0.15 || 0.005; 
+        const pad = (yMax - yMin) * 0.1 || 0.002;
 
         const ctx = document.getElementById('myChart').getContext('2d');
         
-        chart = new Chart(ctx, {
+        if (window.chartInstance) { window.chartInstance.destroy(); }
+
+        window.chartInstance = new Chart(ctx, {
           type: "line",
           data: {
             labels: labels,
@@ -139,8 +140,7 @@
               borderColor: "#5a52ff",
               borderWidth: 2.5,
               pointRadius: 0,
-              pointHoverRadius: 5,
-              tension: 0.15, // Lissage léger et propre de la courbe
+              tension: 0.1,
               fill: 'origin',
               backgroundColor: (c) => {
                 const chartInstance = c.chart;
@@ -166,8 +166,6 @@
                 borderWidth: 1,
                 titleColor: "#111827",
                 bodyColor: "#4b5563",
-                titleFont: { weight: '700', family: 'Inter' },
-                bodyFont: { weight: '500', family: 'Inter' },
                 padding: 12,
                 cornerRadius: 10,
                 callbacks: {
@@ -181,7 +179,6 @@
                 max: parseFloat((yMax + pad).toFixed(4)),
                 ticks: {
                   color: "#6b7280",
-                  font: { family: 'Inter' },
                   callback: v => `${Number(v).toFixed(4)} €`
                 },
                 grid: { color: "rgba(0, 0, 0, 0.04)" },
@@ -190,7 +187,6 @@
               x: {
                 ticks: {
                   color: "#6b7280",
-                  font: { family: 'Inter' },
                   maxRotation: 0,
                   autoSkip: true,
                   maxTicksLimit: 6
@@ -204,9 +200,10 @@
       })
       .catch(err => {
         console.error(err);
+        // Affiche l'erreur exacte directement sur l'écran pour comprendre le blocage
         document.getElementById('wrap').insertAdjacentHTML(
           "beforeend",
-          `<p style="margin-top:16px;color:#ef4444;text-align:center;font-weight:600;">Erreur : Vérifiez les données ou le format du fichier source.</p>`
+          `<p id="err-msg" style="margin-top:16px;color:#ef4444;text-align:center;font-weight:600;background:#fef2f2;padding:10px;border-radius:8px;">${err.message}</p>`
         );
       });
   </script>
