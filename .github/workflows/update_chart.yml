@@ -22,7 +22,7 @@ jobs:
         echo "Début du téléchargement du CSV..."
         
         # Téléchargement du CSV brut depuis votre lien Google
-        curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K76P389E8qj0_zOorv_gM1H8_gI-rWhR9lG9E6_Tf7DszsLh6fMh-PzE8E4x1kOQv2L7U47Wq9b8/pub?output=csv" > raw_data.csv
+        curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vRT_moHbxSD2GZ7lygIo_aXIXs5PlzD5WNNd8HuM6kz4_dc4YIO1Br9mx4yMkdfjVEasP1rrRwqO1Mi/pub?gid=1803115037&single=true&output=csv" > raw_data.csv
         
         echo "Contenu brut reçu (3 premières lignes) :"
         head -n 3 raw_data.csv
