@@ -3,7 +3,7 @@ name: Synchronisation Google Sheet JSON
 on:
   schedule:
     - cron: '0 6 * * *' # Tous les jours à 6h00 UTC
-  workflow_dispatch: # Déclenchement manuel
+  workflow_dispatch: # Permet le déclenchement manuel
 
 permissions:
   contents: write
@@ -14,29 +14,68 @@ jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
-    - name: Récupérer le code
+    - name: Récupérer le code du dépôt
       uses: actions/checkout@v4
 
-    # Cette ligne télécharge le CSV de votre Google Sheet et le convertit directement en fichier de données JSON propre
-    - name: Telecharger les donnees Google Sheet
+    - name: Télécharger et Convertir la Google Sheet
       run: |
-        curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K76P389E8qj0_zOorv_gM1H8_gI-rWhR9lG9E6_Tf7DszsLh6fMh-PzE8E4x1kOQv2L7U47Wq9b8/pub?output=csv" | python3 -c "import csv, json, sys; print(json.dumps(list(csv.DictReader(sys.stdin))))" > data.json
+        echo "Début du téléchargement du CSV..."
+        
+        # Téléchargement du CSV brut depuis votre lien Google
+        curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K76P389E8qj0_zOorv_gM1H8_gI-rWhR9lG9E6_Tf7DszsLh6fMh-PzE8E4x1kOQv2L7U47Wq9b8/pub?output=csv" > raw_data.csv
+        
+        echo "Contenu brut reçu (3 premières lignes) :"
+        head -n 3 raw_data.csv
+        
+        # Conversion sécurisée en JSON avec un script Python robuste intégré
+        python3 -c "
+        import csv, json, sys
+        try:
+            with open('raw_data.csv', mode='r', encoding='utf-8-sig') as f:
+                reader = csv.DictReader(f)
+                # Nettoyage des espaces dans les noms de colonnes
+                reader.fieldnames = [field.strip().lower() for field in reader.fieldnames if field]
+                print('Colonnes nettoyées détectées :', reader.fieldnames)
+                
+                rows = []
+                for row in reader:
+                    # On ne garde que les lignes qui ont une date et un prix
+                    clean_row = {k.strip(): v.strip() for k, v in row.items() if k and v}
+                    if 'date' in clean_row or 'price' in clean_row:
+                        rows.append(clean_row)
+            
+            print(f'Nombre de lignes lues avec succès : {len(rows)}')
+            
+            if len(rows) == 0:
+                raise ValueError('Aucune ligne valide extraite du CSV.')
+                
+            with open('data.json', 'w', encoding='utf-8') as out:
+                json.dump(rows, out, ensure_ascii=False, indent=2)
+            print('Fichier data.json écrit avec succès !')
+        except Exception as e:
+            print('ERREUR DURANT LA CONVERSION :', str(e))
+            sys.exit(1)
+        "
 
-    - name: Sauvegarder data.json sur le dépôt
+    - name: Sauvegarder data.json sur le dépôt GitHub
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions Bot"
         git add data.json
-        git diff-index --quiet HEAD || (git commit -m "Mise à jour automatique des données JSON" && git push)
+        if ! git diff-index --quiet HEAD; then
+          git commit -m "Mise à jour automatique des données JSON"
+          git push
+        else
+          echo "Aucune modification détectée dans les données."
+        fi
 
-    # Déploiement instantané sur GitHub Pages
     - name: Configurer Pages
       uses: actions/configure-pages@v5
 
-    - name: Televerser le site web
+    - name: Téléverser le site web
       uses: actions/upload-pages-artifact@v3
       with:
         path: '.'
 
-    - name: Deployer sur GitHub Pages
+    - name: Déployer sur GitHub Pages
       uses: actions/deploy-pages@v4
