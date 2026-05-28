@@ -14,14 +14,13 @@ def main():
         print("Colonnes détectées dans votre fichier :", list(df.columns))
 
         # 2. Détection automatique des colonnes
-        # On prend la première colonne pour l'axe X (Date) et la deuxième pour l'axe Y (Prix)
         colonne_x = df.columns[0]
         colonne_y = df.columns[1]
         
         print(f"Utilisation de '{colonne_x}' pour les dates et '{colonne_y}' pour les prix.")
 
-        # Convertir la colonne X en vraies dates
-        df[colonne_x] = pd.to_datetime(df[colonne_x])
+        # CORRECTION : Ajout de dayfirst=True pour gérer le format JJ/MM/AAAA
+        df[colonne_x] = pd.to_datetime(df[colonne_x], dayfirst=True)
         df = df.sort_values(colonne_x)
 
         # 3. Création du graphique interactif
