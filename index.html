@@ -8,21 +8,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600&display=swap" rel="stylesheet">
 
   <style>
-    html, body { margin:0;  }
+    html, body { margin:0; padding:0; background:#f9fafb; }
     body {
-      background:#f9fafb;
       font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       display:flex;
       justify-content:center;
+      align-items: center;
+      min-height: 100vh;
     }
     .chart-wrapper {
       background:#fff;
       border-radius:16px;
       box-shadow:0 8px 24px rgba(0,0,0,.06);
-      padding:8px 16px;
-      width:100%;
+      padding:24px;
+      width: 100%;
       max-width:940px;
-      margin:0 auto;
+      margin:20px auto;
+      box-sizing: border-box;
     }
     h1 {
       margin:0 0 6px;
@@ -32,23 +34,26 @@
       color:#0b0f19;
     }
     h3 {
-      margin: 0 0 18px;
+      margin: 0 0 24px;
       text-align: center;
       font-size: 15px;
       font-weight: 400;
       color: #6b7280;
     }
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 450px;
+    }
     #myChart {
-      display:block;
-      width:100%;
-      height:auto;
+      width: 100% !important;
+      height: 100% !important;
     }
     @media (max-width: 640px){
-      body{ padding: 24px 12px 40px; }
-      .chart-wrapper{ max-width: 100%; padding: 12px 14px; }
-      h1{ font-size: 18px; line-height: 1.3; padding: 0 4px; }
-      h3{ font-size: 13px; margin-bottom: 14px; padding: 0 6px; line-height: 1.35; }
-      #myChart{ min-height: 260px; }
+      .chart-wrapper{ padding: 16px; margin: 10px; }
+      h1{ font-size: 18px; }
+      h3{ font-size: 13px; margin-bottom: 16px; }
+      .canvas-container { height: 300px; }
     }
   </style>
 </head>
@@ -58,39 +63,32 @@
     <h1>Historique des prédictions du prix du kWh TTC au TRVE résidentiel en 2026</h1>
     <h3>Evolution de l'estimation depuis janvier 2025</h3>
     
-    <canvas id="myChart" aria-label="Courbe des prix" role="img"></canvas>
+    <div class="canvas-container">
+      <canvas id="myChart" aria-label="Courbe des prix" role="img"></canvas>
+    </div>
   </div>
 
   <script>
-    // Lien dynamique vers le fichier data.json qui sera mis à jour par GitHub
     const jsonUrl = "https://raw.githubusercontent.com/FEPPN/daily-gas-spot-price/main/data.json";
 
+    // Fonction pour extraire proprement les valeurs des clés (gère la casse)
     const pick = (o, ks) => {
-      for (const k of ks)
+      for (const k of ks) {
         if (o?.[k] !== undefined && o[k] !== null && o[k] !== "") return o[k];
-    };
-    
-    const fmtDate = iso => {
-      try {
-        return new Date(iso).toLocaleDateString('fr-FR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        });
-      } catch { return String(iso ?? ""); }
+      }
+      return null;
     };
 
-    let chart;
-
-    function sizeCanvasOnce() {
-      const wrap = document.getElementById('wrap');
-      const cvs  = document.getElementById('myChart');
-      const w = Math.floor(wrap.clientWidth);
-      const h = 480;
-      cvs.width = w;
-      cvs.height = h;
-      return cvs.getContext('2d');
-    }
+    // Convertit une chaîne "JJ/MM/AAAA" en un vrai objet Date JavaScript
+    const parseFrenchDate = (str) => {
+      if (!str) return null;
+      const parts = str.split('/');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+      }
+      const parsed = new Date(str);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    };
 
     fetch(jsonUrl, { cache: "no-store" })
       .then(r => {
@@ -98,55 +96,69 @@
         return r.json();
       })
       .then(rows => {
-        const isoDates = [], labels = [], values = [];
-        
+        let dataPoints = [];
+
         rows.forEach(r => {
-          // S'adapte automatiquement si vos colonnes s'appellent date, price ou sans ARENH
-          const iso = pick(r, ["date", "Date", "dateISO"]);
-          const val = Number(pick(r, ["price", "Price", "withoutARENH", "without_arenh"]));
+          const rawDate = pick(r, ["date", "Date", "dateISO"]);
+          const rawVal = pick(r, ["price", "Price", "withoutARENH", "without_arenh"]);
           
-          if (!iso || Number.isNaN(val)) return;
-          isoDates.push(String(iso));
-          labels.push(fmtDate(iso));
-          values.push(val);
+          // Nettoyage de la valeur numérique (remplace la virgule européenne par un point si nécessaire)
+          let cleanVal = String(rawVal).replace(',', '.').replace(/[^\d.-]/g, '');
+          const val = parseFloat(cleanVal);
+          const dateObj = parseFrenchDate(rawDate);
+
+          if (dateObj && !isNaN(val)) {
+            dataPoints.push({ date: dateObj, val: val, labelStr: rawDate });
+          }
         });
 
+        // Tri par ordre chronologique strict
+        dataPoints.sort((a, b) => a.date - b.date);
+
+        if (dataPoints.length === 0) {
+          throw new Error("Aucune donnée valide trouvée.");
+        }
+
+        const labels = dataPoints.map(p => p.labelStr);
+        const values = dataPoints.map(p => p.val);
+
+        // Calcul dynamique des limites de l'axe Y pour zoomer sur la courbe
         const yMin = Math.min(...values);
         const yMax = Math.max(...values);
-        const pad = Math.max((yMax - yMin) * 0.06, 0.0005);
+        const pad = (yMax - yMin) * 0.15 || 0.005; 
 
-        const ctx = sizeCanvasOnce();
-        if (chart) chart.destroy();
-
+        const ctx = document.getElementById('myChart').getContext('2d');
+        
         chart = new Chart(ctx, {
           type: "line",
           data: {
-            labels,
+            labels: labels,
             datasets: [{
               label: "Prix",
               data: values,
               borderColor: "#5a52ff",
               borderWidth: 2.5,
               pointRadius: 0,
-              tension: 0.28,
+              pointHoverRadius: 5,
+              tension: 0.15, // Lissage léger et propre de la courbe
               fill: 'origin',
               backgroundColor: (c) => {
-                const { chart } = c;
-                const ca = chart.chartArea;
-                if (!ca) return 'rgba(0,0,0,0)';
-                const g = chart.ctx.createLinearGradient(0, ca.top, 0, ca.bottom);
-                g.addColorStop(0, 'rgba(90,82,255,0.22)');
-                g.addColorStop(1, 'rgba(90,82,255,0.00)');
-                return g;
+                const chartInstance = c.chart;
+                const {ctx, chartArea} = chartInstance;
+                if (!chartArea) return 'rgba(0,0,0,0)';
+                const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                gradient.addColorStop(0, 'rgba(90, 82, 255, 0.25)');
+                gradient.addColorStop(1, 'rgba(90, 82, 255, 0.00)');
+                return gradient;
               }
             }]
           },
           options: {
-            responsive: false,
+            responsive: true,
+            maintainAspectRatio: false,
             animation: false,
-            interaction: { mode: 'nearest', intersect: false },
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-              filler: { propagate: false },
               legend: { display: false },
               tooltip: {
                 backgroundColor: "#fff",
@@ -154,34 +166,34 @@
                 borderWidth: 1,
                 titleColor: "#111827",
                 bodyColor: "#4b5563",
-                titleFont: { weight: '700' },
-                bodyFont: { weight: '500' },
-                padding: 10,
+                titleFont: { weight: '700', family: 'Inter' },
+                bodyFont: { weight: '500', family: 'Inter' },
+                padding: 12,
                 cornerRadius: 10,
                 callbacks: {
-                  label: (c) => `${c.parsed.y.toFixed(4)} € / kWh TTC`
+                  label: (c) => ` ${c.parsed.y.toFixed(4)} € / kWh TTC`
                 }
               }
             },
             scales: {
               y: {
-                suggestedMin: Math.floor((yMin - pad) * 1000) / 1000,
-                suggestedMax: Math.ceil((yMax + pad) * 1000) / 1000,
-                beginAtZero: false,
+                min: parseFloat((yMin - pad).toFixed(4)),
+                max: parseFloat((yMax + pad).toFixed(4)),
                 ticks: {
                   color: "#6b7280",
-                  precision: 4,
+                  font: { family: 'Inter' },
                   callback: v => `${Number(v).toFixed(4)} €`
                 },
-                grid: { color: "rgba(0,0,0,0.06)" },
+                grid: { color: "rgba(0, 0, 0, 0.04)" },
                 border: { display: false }
               },
               x: {
                 ticks: {
                   color: "#6b7280",
+                  font: { family: 'Inter' },
                   maxRotation: 0,
-                  autoSkip: true, // Évite la superposition des dates si elles sont nombreuses
-                  maxTicksLimit: 8
+                  autoSkip: true,
+                  maxTicksLimit: 6
                 },
                 grid: { display: false },
                 border: { display: false }
@@ -194,7 +206,7 @@
         console.error(err);
         document.getElementById('wrap').insertAdjacentHTML(
           "beforeend",
-          `<p style="margin-top:8px;color:#ef4444;text-align:center">Erreur de chargement des données.</p>`
+          `<p style="margin-top:16px;color:#ef4444;text-align:center;font-weight:600;">Erreur : Vérifiez les données ou le format du fichier source.</p>`
         );
       });
   </script>
