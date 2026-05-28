@@ -32,10 +32,9 @@ jobs:
       run: python generate_chart.py
 
     # 5. Enregistre l'image créée et la renvoie sur votre dépôt GitHub
-    - name: Sauvegarde de l'image sur GitHub
+- name: Sauvegarde du graphique sur GitHub
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions Bot"
-        git add graphique.png
-        # Permet de ne pas faire planter le script s'il n'y a aucune nouvelle donnée sur le Sheet
-        git diff-index --quiet HEAD || (git commit -m "Mise à jour auto : nouveau graphique" && git push)
+        git add index.html
+        git diff-index --quiet HEAD || (git commit -m "Mise à jour du graphique HTML" && git push)
