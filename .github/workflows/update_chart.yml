@@ -1,60 +1,42 @@
-name: Routine de mise a jour du graphique
+name: Synchronisation Google Sheet JSON
 
 on:
   schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
+    - cron: '0 6 * * *' # Tous les jours à 6h00 UTC
+  workflow_dispatch: # Déclenchement manuel
 
-# ÉTAPE CRUCIALE : Donne le droit à l'action de publier sur GitHub Pages
 permissions:
   contents: write
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
-  run-script:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  update-data:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout du code
+    - name: Récupérer le code
       uses: actions/checkout@v4
 
-    - name: Configuration de Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Installation des modules Python
+    # Cette ligne télécharge le CSV de votre Google Sheet et le convertit directement en fichier de données JSON propre
+    - name: Telecharger les donnees Google Sheet
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        curl -sL "https://docs.google.com/spreadsheets/d/e/2PACX-1vT5K76P389E8qj0_zOorv_gM1H8_gI-rWhR9lG9E6_Tf7DszsLh6fMh-PzE8E4x1kOQv2L7U47Wq9b8/pub?output=csv" | python3 -c "import csv, json, sys; print(json.dumps(list(csv.DictReader(sys.stdin))))" > data.json
 
-    - name: Creation du graphique
-      run: python generate_chart.py
-
-    - name: Sauvegarde de l'image sur GitHub
+    - name: Sauvegarder data.json sur le dépôt
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions Bot"
-        git add index.html
-        git diff-index --quiet HEAD || (git commit -m "Mise à jour du graphique HTML" && git push)
+        git add data.json
+        git diff-index --quiet HEAD || (git commit -m "Mise à jour automatique des données JSON" && git push)
 
-    # NOUVELLES ÉTAPES : Publie automatiquement le fichier index.html sur le web
+    # Déploiement instantané sur GitHub Pages
     - name: Configurer Pages
       uses: actions/configure-pages@v5
 
     - name: Televerser le site web
       uses: actions/upload-pages-artifact@v3
       with:
-        path: '.' # Publie la racine du dépôt où se trouve index.html
+        path: '.'
 
     - name: Deployer sur GitHub Pages
-      id: deployment
       uses: actions/deploy-pages@v4
