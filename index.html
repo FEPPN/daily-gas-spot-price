@@ -2,7 +2,7 @@
 <html lang="fr">
 <head> 
   <meta charset="UTF-8" />
-  <title>Historique des prédictions</title>
+  <title>Prix spot du gaz en temps réel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600&display=swap" rel="stylesheet">
@@ -60,8 +60,8 @@
 
 <body>
   <div class="chart-wrapper" id="wrap">
-    <h1>Historique des prédictions du prix du kWh TTC au TRVE résidentiel en 2026</h1>
-    <h3>Evolution de l'estimation depuis janvier 2025</h3>
+    <h1>Prix spot du gaz en temps réel</h1>
+    <h3>Le graphique est mis à jour quotidiennement à 9h</h3>
     
     <div class="canvas-container">
       <canvas id="myChart" aria-label="Courbe des prix" role="img"></canvas>
@@ -69,10 +69,8 @@
   </div>
 
   <script>
-    // URL brute du fichier de données généré par l'Action
     const jsonUrl = "https://raw.githubusercontent.com/FEPPN/daily-gas-spot-price/main/data.json";
 
-    // Convertit "JJ/MM/AAAA" en objet Date valide
     const parseFrenchDate = (str) => {
       if (!str) return null;
       const parts = str.split('/');
@@ -95,13 +93,11 @@
         }
 
         rows.forEach((r, index) => {
-          // Extraction directe basée strictement sur vos colonnes en minuscules
           const rawDate = r['date'] || r['Date'];
           const rawVal = r['price'] || r['Price'];
           
           if (!rawDate || !rawVal) return;
 
-          // Nettoyage et conversion
           let cleanVal = String(rawVal).replace(',', '.').replace(/[^\d.-]/g, '');
           const val = parseFloat(cleanVal);
           const dateObj = parseFrenchDate(String(rawDate).strip ? String(rawDate).strip() : String(rawDate));
@@ -111,7 +107,6 @@
           }
         });
 
-        // Tri par ordre chronologique
         dataPoints.sort((a, b) => a.date - b.date);
 
         if (dataPoints.length === 0) {
@@ -121,7 +116,6 @@
         const labels = dataPoints.map(p => p.labelStr);
         const values = dataPoints.map(p => p.val);
 
-        // Calcul dynamique des axes pour zoomer
         const yMin = Math.min(...values);
         const yMax = Math.max(...values);
         const pad = (yMax - yMin) * 0.1 || 0.002;
@@ -169,17 +163,19 @@
                 padding: 12,
                 cornerRadius: 10,
                 callbacks: {
-                  label: (c) => ` ${c.parsed.y.toFixed(4)} € / kWh TTC`
+                  // ✅ MODIFICATION 3 : TEXTE DE LA BULLE AU SURVOL
+                  label: (c) => ` ${c.parsed.y.toFixed(2)} € / MWh`
                 }
               }
             },
             scales: {
               y: {
-                min: parseFloat((yMin - pad).toFixed(4)),
-                max: parseFloat((yMax + pad).toFixed(4)),
+                min: parseFloat((yMin - pad).toFixed(2)),
+                max: parseFloat((yMax + pad).toFixed(2)),
                 ticks: {
                   color: "#6b7280",
-                  callback: v => `${Number(v).toFixed(4)} €`
+                  // ✅ TEXTE DES GRADUATIONS DE L'AXE Y
+                  callback: v => `${Number(v).toFixed(2)} €`
                 },
                 grid: { color: "rgba(0, 0, 0, 0.04)" },
                 border: { display: false }
@@ -200,7 +196,6 @@
       })
       .catch(err => {
         console.error(err);
-        // Affiche l'erreur exacte directement sur l'écran pour comprendre le blocage
         document.getElementById('wrap').insertAdjacentHTML(
           "beforeend",
           `<p id="err-msg" style="margin-top:16px;color:#ef4444;text-align:center;font-weight:600;background:#fef2f2;padding:10px;border-radius:8px;">${err.message}</p>`
