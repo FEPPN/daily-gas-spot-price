@@ -188,56 +188,58 @@
   },
   {
     "date": "23/02/2026",
-    "price": "30.078"
+    "price": "30.078",
+    "evol vs avant guerre": "-0.001527021644"
   },
   {
     "date": "24/02/2026",
-    "price": "30.053"
+    "price": "30.053",
+    "evol vs avant guerre": "-0.002356924711"
   },
   {
     "date": "26/02/2026",
     "price": "29.396",
-    "evol vs avant guerre": "-0.02186137823"
+    "evol vs avant guerre": "-0.02416677732"
   },
   {
     "date": "27/02/2026",
     "price": "30.495",
-    "evol vs avant guerre": "0.01470735035"
+    "evol vs avant guerre": "0.01231576152"
   },
   {
     "date": "28/02/2026",
     "price": "30.124",
-    "evol vs avant guerre": "0.002362492929"
+    "evol vs avant guerre": "0"
   },
   {
     "date": "01/03/2026",
     "price": "30.124",
-    "evol vs avant guerre": "0.002362492929"
+    "evol vs avant guerre": "0.00%"
   },
   {
     "date": "02/03/2026",
     "price": "30.234",
-    "evol vs avant guerre": "0.006022693242"
+    "evol vs avant guerre": "0.37%"
   },
   {
     "date": "03/03/2026",
     "price": "42.645",
-    "evol vs avant guerre": "41.90%"
+    "evol vs avant guerre": "41.56%"
   },
   {
     "date": "04/03/2026",
     "price": "53.158",
-    "evol vs avant guerre": "76.88%"
+    "evol vs avant guerre": "76.46%"
   },
   {
     "date": "05/03/2026",
     "price": "47.658",
-    "evol vs avant guerre": "58.58%"
+    "evol vs avant guerre": "58.21%"
   },
   {
     "date": "06/03/2026",
     "price": "49.426",
-    "evol vs avant guerre": "64.46%"
+    "evol vs avant guerre": "64.08%"
   },
   {
     "date": "07/03/2026",
@@ -246,17 +248,17 @@
   {
     "date": "11/03/2026",
     "price": "46.037",
-    "evol vs avant guerre": "53.19%"
+    "evol vs avant guerre": "52.82%"
   },
   {
     "date": "12/03/2026",
     "price": "48.572",
-    "evol vs avant guerre": "61.62%"
+    "evol vs avant guerre": "61.24%"
   },
   {
     "date": "13/03/2026",
     "price": "49.591",
-    "evol vs avant guerre": "65.01%"
+    "evol vs avant guerre": "64.62%"
   },
   {
     "date": "14/03/2026",
@@ -265,92 +267,92 @@
   {
     "date": "17/03/2026",
     "price": "49.816",
-    "evol vs avant guerre": "65.76%"
+    "evol vs avant guerre": "65.37%"
   },
   {
     "date": "18/03/2026",
     "price": "50.594",
-    "evol vs avant guerre": "68.35%"
+    "evol vs avant guerre": "67.95%"
   },
   {
     "date": "19/03/2026",
     "price": "53.736",
-    "evol vs avant guerre": "78.80%"
+    "evol vs avant guerre": "78.38%"
   },
   {
     "date": "20/03/2026",
     "price": "61.513",
-    "evol vs avant guerre": "104.68%"
+    "evol vs avant guerre": "104.20%"
   },
   {
     "date": "21/03/2026",
     "price": "58.27",
-    "evol vs avant guerre": "93.89%"
+    "evol vs avant guerre": "93.43%"
   },
   {
     "date": "22/03/2026",
     "price": "58.27",
-    "evol vs avant guerre": "93.89%"
+    "evol vs avant guerre": "93.43%"
   },
   {
     "date": "23/03/2026",
     "price": "58.309",
-    "evol vs avant guerre": "94.02%"
+    "evol vs avant guerre": "93.56%"
   },
   {
     "date": "24/03/2026",
     "price": "56.481",
-    "evol vs avant guerre": "87.94%"
+    "evol vs avant guerre": "87.50%"
   },
   {
     "date": "25/03/2026",
     "price": "52.705",
-    "evol vs avant guerre": "75.37%"
+    "evol vs avant guerre": "74.96%"
   },
   {
     "date": "26/03/2026",
     "price": "51.997",
-    "evol vs avant guerre": "73.02%"
+    "evol vs avant guerre": "72.61%"
   },
   {
     "date": "27/03/2026",
     "price": "54.925",
-    "evol vs avant guerre": "82.76%"
+    "evol vs avant guerre": "82.33%"
   },
   {
     "date": "28/03/2026",
     "price": "53.667",
-    "evol vs avant guerre": "78.57%"
+    "evol vs avant guerre": "78.15%"
   },
   {
     "date": "29/03/2026",
     "price": "53.667",
-    "evol vs avant guerre": "78.57%"
+    "evol vs avant guerre": "78.15%"
   },
   {
     "date": "30/03/2026",
     "price": "53.657",
-    "evol vs avant guerre": "78.54%"
+    "evol vs avant guerre": "78.12%"
   },
   {
     "date": "31/03/2026",
     "price": "53.919",
-    "evol vs avant guerre": "79.41%"
+    "evol vs avant guerre": "78.99%"
   },
   {
     "date": "01/04/2026",
     "price": "49.636",
-    "evol vs avant guerre": "65.16%"
+    "evol vs avant guerre": "64.77%"
   },
   {
     "date": "02/04/2026",
     "price": "47.011",
-    "evol vs avant guerre": "56.43%"
+    "evol vs avant guerre": "56.06%"
   },
   {
     "date": "03/04/2026",
     "price": "49.398",
-    "evol vs avant guerre": "64.37%"
+    "evol vs avant guerre": "63.98%"
   },
   {
     "date": "04/04/2026",
@@ -367,92 +369,90 @@
   {
     "date": "08/04/2026",
     "price": "51.523",
-    "evol vs avant guerre": "71.44%"
+    "evol vs avant guerre": "71.04%"
   },
   {
     "date": "09/04/2026",
     "price": "44.305",
-    "evol vs avant guerre": "47.42%"
+    "evol vs avant guerre": "47.08%"
   },
   {
     "date": "10/04/2026",
     "price": "44.502",
-    "evol vs avant guerre": "48.08%"
+    "evol vs avant guerre": "47.73%"
   },
   {
     "date": "11/04/2026",
     "price": "42.443",
-    "evol vs avant guerre": "41.23%"
+    "evol vs avant guerre": "40.89%"
   },
   {
     "date": "12/04/2026",
     "price": "42.443",
-    "evol vs avant guerre": "41.23%"
+    "evol vs avant guerre": "40.89%"
   },
   {
     "date": "13/04/2026",
     "price": "42.576",
-    "evol vs avant guerre": "41.67%"
+    "evol vs avant guerre": "41.34%"
   },
   {
     "date": "14/04/2026",
     "price": "45.134",
-    "evol vs avant guerre": "50.18%"
+    "evol vs avant guerre": "49.83%"
   },
   {
     "date": "15/04/2026",
     "price": "41.823",
-    "evol vs avant guerre": "39.16%"
+    "evol vs avant guerre": "38.84%"
   },
   {
     "date": "17/04/2026",
     "price": "41.358",
-    "evol vs avant guerre": "37.62%"
+    "evol vs avant guerre": "37.29%"
   },
   {
     "date": "18/04/2026",
     "price": "37.716",
-    "evol vs avant guerre": "25.50%"
+    "evol vs avant guerre": "25.20%"
   },
   {
     "date": "19/04/2026",
     "price": "37.716",
-    "evol vs avant guerre": "25.50%"
+    "evol vs avant guerre": "25.20%"
   },
   {
     "date": "20/04/2026",
     "price": "38.063",
-    "evol vs avant guerre": "26.65%"
+    "evol vs avant guerre": "26.35%"
   },
   {
     "date": "21/04/2026",
     "price": "39.079",
-    "evol vs avant guerre": "30.03%"
+    "evol vs avant guerre": "29.73%"
   },
   {
     "date": "22/04/2026",
     "price": "41.263",
-    "evol vs avant guerre": "37.30%"
+    "evol vs avant guerre": "36.98%"
   },
   {
     "date": "23/04/2026",
     "price": "42.69",
-    "evol vs avant guerre": "42.05%"
+    "evol vs avant guerre": "41.71%"
   },
   {
     "date": "24/04/2026",
     "price": "43.333",
-    "evol vs avant guerre": "44.19%"
+    "evol vs avant guerre": "43.85%"
   },
   {
     "date": "25/04/2026",
-    "price": "43.978",
-    "evol vs avant guerre": "46.33%"
+    "price": "43.978"
   },
   {
     "date": "26/04/2026",
-    "price": "43.978",
-    "evol vs avant guerre": "46.33%"
+    "price": "43.978"
   },
   {
     "date": "27/04/2026",
@@ -505,11 +505,11 @@
     "price": "43.158"
   },
   {
-    "date": "11/05/2026"
-  },
-  {
     "date": "11/05/2026",
     "price": "43.133"
+  },
+  {
+    "date": "11/05/2026"
   },
   {
     "date": "12/05/2026",
@@ -536,11 +536,11 @@
     "price": "49.064"
   },
   {
-    "date": "18/05/2026"
-  },
-  {
     "date": "18/05/2026",
     "price": "49.082"
+  },
+  {
+    "date": "18/05/2026"
   },
   {
     "date": "19/05/2026",
@@ -563,11 +563,11 @@
     "price": "47.12"
   },
   {
-    "date": "25/05/2026",
-    "price": "47.262"
+    "date": "25/05/2026"
   },
   {
-    "date": "25/05/2026"
+    "date": "25/05/2026",
+    "price": "47.262"
   },
   {
     "date": "26/05/2026"
@@ -579,5 +579,70 @@
   {
     "date": "28/05/2026",
     "price": "45.734"
+  },
+  {
+    "date": "29/05/2026",
+    "price": "45.811"
+  },
+  {
+    "date": "30/05/2026",
+    "price": "44.622"
+  },
+  {
+    "date": "31/05/2026",
+    "price": "44.622"
+  },
+  {
+    "date": "01/06/2026"
+  },
+  {
+    "date": "01/06/2026",
+    "price": "44.587"
+  },
+  {
+    "date": "02/06/2026",
+    "price": "48.099"
+  },
+  {
+    "date": "03/06/2026",
+    "price": "46.812"
+  },
+  {
+    "date": "04/06/2026",
+    "price": "48.171"
+  },
+  {
+    "date": "05/06/2026",
+    "price": "48.057"
+  },
+  {
+    "date": "07/06/2026",
+    "price": "47.698"
+  },
+  {
+    "date": "08/06/2026",
+    "price": "47.728"
+  },
+  {
+    "date": "08/06/2026"
+  },
+  {
+    "date": "09/06/2026",
+    "price": "49.204"
+  },
+  {
+    "date": "10/06/2026",
+    "price": "47.913"
+  },
+  {
+    "date": "11/06/2026",
+    "price": "49.29"
+  },
+  {
+    "date": "12/06/2026",
+    "price": "49.022"
+  },
+  {
+    "date": "13/06/2026"
   }
 ]
