@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600&display=swap" rel="stylesheet">
 
   <style>
-    html, body { margin:0; padding:0; background:#f9fafb; }
+html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fond transparent */
     body {
       font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       display:flex;
@@ -17,14 +17,15 @@
       min-height: 100vh;
     }
     .chart-wrapper {
-      background:#fff;
-      border-radius:16px;
-      box-shadow:0 8px 24px rgba(0,0,0,.06);
-      padding:24px;
+      background: transparent; /* ✅ Supprime le fond blanc qui créait le bloc */
+      border-radius: 0px;      /* ✅ Plus besoin de bords arrondis */
+      box-shadow: none;        /* ✅ SUPPRIME L'OMBRE GRISE (Le fameux bord gris) */
+      padding: 10px 24px;      /* Légère marge interne pour respirer */
       width: 100%;
-      max-width:940px;
-      margin:20px auto;
+      max-width: 940px;
+      margin: 0 auto;
       box-sizing: border-box;
+    }
     }
     h1 {
       margin:0 0 6px;
