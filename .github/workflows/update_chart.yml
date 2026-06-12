@@ -2,7 +2,7 @@ name: Synchronisation Google Sheet JSON
 
 on:
   schedule:
-    - cron: '0 6 * * *' # Tous les jours à 6h00 UTC
+    - cron: '0 7 * * *' # Tous les jours à 7h00 UTC soit 9h en FR
   workflow_dispatch: # Permet le déclenchement manuel
 
 permissions:
