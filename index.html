@@ -8,7 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;600&display=swap" rel="stylesheet">
 
   <style>
-html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fond transparent */
+    /* ✅ Le fond du body est transparent pour épouser votre site, mais l'alignement est préservé */
+    html, body { margin:0; padding:0; background: transparent; }
     body {
       font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
       display:flex;
@@ -16,27 +17,30 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
       align-items: center;
       min-height: 100vh;
     }
+    /* ✅ RETOUR DE LA BELLE BOÎTE BLANCHE AVEC SON OMBRE ET SES BORDS ARRONDIS */
     .chart-wrapper {
-      background: transparent; /* ✅ Supprime le fond blanc qui créait le bloc */
-      border-radius: 0px;      /* ✅ Plus besoin de bords arrondis */
-      box-shadow: none;        /* ✅ SUPPRIME L'OMBRE GRISE (Le fameux bord gris) */
-      padding: 10px 24px;      /* Légère marge interne pour respirer */
+      background: #ffffff;      /* Fond blanc impeccable */
+      border-radius: 16px;      /* Bords arrondis élégants */
+      box-shadow: 0 8px 24px rgba(0,0,0,.06); /* Ombre douce et moderne */
+      padding: 24px;
       width: 100%;
       max-width: 940px;
-      margin: 0 auto;
+      margin: 10px auto;        /* Petite marge de sécurité pour ne pas coller */
       box-sizing: border-box;
     }
-    }
+    /* ✅ FIX DU TITRE DÉCENTRÉ */
     h1 {
-      margin:0 0 6px;
-      text-align:center;
-      font-size:22px;
-      font-weight:600;
-      color:#0b0f19;
+      margin: 0 0 6px;
+      text-align: center !important; /* Force le centrage parfait */
+      width: 100%;
+      font-size: 22px;
+      font-weight: 600;
+      color: #0b0f19;
     }
     h3 {
       margin: 0 0 24px;
-      text-align: center;
+      text-align: center !important; /* Force le centrage parfait */
+      width: 100%;
       font-size: 15px;
       font-weight: 400;
       color: #6b7280;
@@ -44,16 +48,16 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
     .canvas-container {
       position: relative;
       width: 100%;
-      height: 450px;
+      height: 420px; /* Légèrement ajusté pour laisser respirer les dates du bas */
     }
     #myChart {
       width: 100% !important;
       height: 100% !important;
     }
     @media (max-width: 640px){
-      .chart-wrapper{ padding: 16px; margin: 10px; }
-      h1{ font-size: 18px; }
-      h3{ font-size: 13px; margin-bottom: 16px; }
+      .chart-wrapper { padding: 16px; margin: 5px; }
+      h1 { font-size: 18px; }
+      h3 { font-size: 13px; margin-bottom: 16px; }
       .canvas-container { height: 300px; }
     }
   </style>
@@ -83,25 +87,21 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
 
     fetch(jsonUrl, { cache: "no-store" })
       .then(r => {
-        if (!r.ok) throw new Error("Impossible de charger le fichier data.json (Erreur HTTP " + r.status + ")");
+        if (!r.ok) throw new Error("Impossible de charger les données.");
         return r.json();
       })
       .then(rows => {
         let dataPoints = [];
 
-        if (!rows || rows.length === 0) {
-          throw new Error("Le fichier data.json existe mais il est vide.");
-        }
-
-        rows.forEach((r, index) => {
+        rows.forEach(r => {
           const rawDate = r['date'] || r['Date'];
-          const rawVal = r['price'] || r['Price'];
+          const rawVal = r['price'] || r['Price'] || r['withoutARENH'] || r['without_arenh'];
           
           if (!rawDate || !rawVal) return;
 
           let cleanVal = String(rawVal).replace(',', '.').replace(/[^\d.-]/g, '');
           const val = parseFloat(cleanVal);
-          const dateObj = parseFrenchDate(String(rawDate).strip ? String(rawDate).strip() : String(rawDate));
+          const dateObj = parseFrenchDate(String(rawDate).trim());
 
           if (dateObj && !isNaN(val)) {
             dataPoints.push({ date: dateObj, val: val, labelStr: rawDate });
@@ -111,7 +111,7 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
         dataPoints.sort((a, b) => a.date - b.date);
 
         if (dataPoints.length === 0) {
-          throw new Error("Données illisibles. Vérifiez que la colonne A contient des dates (JJ/MM/AAAA) et la colonne B des chiffres.");
+          throw new Error("Données illisibles.");
         }
 
         const labels = dataPoints.map(p => p.labelStr);
@@ -122,7 +122,6 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
         const pad = (yMax - yMin) * 0.1 || 0.002;
 
         const ctx = document.getElementById('myChart').getContext('2d');
-        
         if (window.chartInstance) { window.chartInstance.destroy(); }
 
         window.chartInstance = new Chart(ctx, {
@@ -164,7 +163,6 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
                 padding: 12,
                 cornerRadius: 10,
                 callbacks: {
-                  // ✅ MODIFICATION 3 : TEXTE DE LA BULLE AU SURVOL
                   label: (c) => ` ${c.parsed.y.toFixed(2)} € / MWh`
                 }
               }
@@ -175,7 +173,6 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
                 max: parseFloat((yMax + pad).toFixed(2)),
                 ticks: {
                   color: "#6b7280",
-                  // ✅ TEXTE DES GRADUATIONS DE L'AXE Y
                   callback: v => `${Number(v).toFixed(2)} €`
                 },
                 grid: { color: "rgba(0, 0, 0, 0.04)" },
@@ -197,10 +194,6 @@ html, body { margin:0; padding:0; background: transparent; } /* ✅ Ajout du fon
       })
       .catch(err => {
         console.error(err);
-        document.getElementById('wrap').insertAdjacentHTML(
-          "beforeend",
-          `<p id="err-msg" style="margin-top:16px;color:#ef4444;text-align:center;font-weight:600;background:#fef2f2;padding:10px;border-radius:8px;">${err.message}</p>`
-        );
       });
   </script>
 </body>
