@@ -184,7 +184,8 @@
   },
   {
     "date": "22/02/2026",
-    "price": "30.124"
+    "price": "30.124",
+    "evol vs avant guerre": "0"
   },
   {
     "date": "23/02/2026",
@@ -209,7 +210,7 @@
   {
     "date": "28/02/2026",
     "price": "30.124",
-    "evol vs avant guerre": "0"
+    "evol vs avant guerre": "0.00%"
   },
   {
     "date": "01/03/2026",
@@ -443,8 +444,7 @@
   },
   {
     "date": "24/04/2026",
-    "price": "43.333",
-    "evol vs avant guerre": "43.85%"
+    "price": "43.333"
   },
   {
     "date": "25/04/2026",
